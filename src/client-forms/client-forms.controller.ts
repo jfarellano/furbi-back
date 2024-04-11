@@ -21,4 +21,14 @@ export class ClientFormsController {
   remove(@Param('id') id: string) {
     return this.clientFormsService.remove(+id);
   }
+
+  @Get("/qaa1/:id")
+  getQaa1(@Param('id') id:number) {
+    return this.clientFormsService.getQaa1(id)
+  }
+
+  @Get("/qaa2/:id")
+  getQaa2(@Param('id') id:number) {
+    return this.clientFormsService.getQaa2(id)
+  }
 }

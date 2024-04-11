@@ -99,11 +99,11 @@ export class ClientForm {
 
   // Double string array
   @Column('json', {nullable: true}) // 22, 23
-  touchPoints: TouchPoint
+  touchPoints: TouchPoint[]
 
   // Double string array
   @Column("json", {nullable: true}) // 27
-  opposition: Opposition
+  opposition: Opposition[]
 
   @Column({nullable: true}) // 30
   oppositionMarketing: string
