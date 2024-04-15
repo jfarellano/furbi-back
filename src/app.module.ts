@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { ClientsModule } from './clients/clients.module';
 import { AuthModule } from './auth/auth.module';
 import { ClientFormsModule } from './client-forms/client-forms.module';
+import { GeneratorsModule } from './generators/generators.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ClientFormsModule } from './client-forms/client-forms.module';
     ClientsModule,
     AuthModule,
     ClientFormsModule,
+    GeneratorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

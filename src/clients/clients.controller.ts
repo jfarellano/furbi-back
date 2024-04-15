@@ -1,9 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, StreamableFile } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-
 @Controller('clients')
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
@@ -36,5 +35,25 @@ export class ClientsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.clientsService.remove(+id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/folder/:id')
+  folder(@Param('id') id: string) {
+    return this.clientsService.getFolder(+id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('/file')
+  async file(@Body() body: {name:string}, @Res({ passthrough: true }) res) {
+    const file = await this.clientsService.downloadFromFolder(body.name)
+    const bitArray = await file.Body.transformToByteArray()
+
+    res.set({
+      'Content-Type': file.ContentType,
+      'Content-Disposition': `attachment; filename="${body.name.split('/').pop()}"`,
+    });
+
+    return new StreamableFile(bitArray)
   }
 }

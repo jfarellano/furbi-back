@@ -9,5 +9,6 @@ import { ClientsModule } from 'src/clients/clients.module';
   imports: [TypeOrmModule.forFeature([ClientForm]), ClientsModule],
   controllers: [ClientFormsController],
   providers: [ClientFormsService],
+  exports: [ClientFormsService]
 })
 export class ClientFormsModule {}

@@ -4,7 +4,6 @@ import { UpdateClientFormDto } from './dto/update-client-form.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ClientForm } from './entities/client-form.entity';
 import { Repository } from 'typeorm';
-import { Client } from 'src/clients/entities/client.entity';
 import { ClientsService } from 'src/clients/clients.service';
 
 @Injectable()
