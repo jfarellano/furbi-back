@@ -38,7 +38,7 @@ export class GeneratorsService {
 
     const newExecution = await this.generatorRepository.save({
       clientId: form.id,
-      index: 0,
+      index: -1,
       state: [],
       type: 'AVC'
     })
@@ -47,8 +47,8 @@ export class GeneratorsService {
       FunctionName: process.env.AVC_FUNCTION,
       InvocationType: 'Event',
       Payload: JSON.stringify({
-        Grupo: form.otherPublics.map(otherPublic => otherPublic.client)[0],
-        Grupos: form.otherPublics.map(otherPublic => otherPublic.client),
+        Grupo: 'Publico General',
+        Grupos: ['Publico General', form.otherPublics.map(otherPublic => otherPublic.client)],
         qaa1,
         qaa2,
         clientId: newExecution.clientId,
