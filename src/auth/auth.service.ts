@@ -9,16 +9,30 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signIn(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.validatePassword(email, pass)
+  async signIn(phone: string, pass: string): Promise<any> {
+    const user = await this.usersService.validatePassword(phone, pass)
 
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: user.id, email: user.email, name: user.name };
+    const payload = { sub: user.id, phone: user.phone, name: user.name };
     return {
       access_token: await this.jwtService.signAsync(payload),
+    };
+  }
+
+  async register(phone: string, pass: string, name: string): Promise<any> {
+    //const user = await this.usersService.validatePassword(phone, pass)
+
+    const user = this.usersService.create({
+      phone: phone,
+      password: pass,
+      name: name
+    });
+
+    return {
+      message: "user created!"
     };
   }
 }

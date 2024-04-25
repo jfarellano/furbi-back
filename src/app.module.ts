@@ -5,10 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import typeorm from './config/typeorm';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
-import { ClientsModule } from './clients/clients.module';
 import { AuthModule } from './auth/auth.module';
-import { ClientFormsModule } from './client-forms/client-forms.module';
-import { GeneratorsModule } from './generators/generators.module';
+import { GroupsModule } from './groups/groups.module';
 
 @Module({
   imports: [
@@ -22,10 +20,8 @@ import { GeneratorsModule } from './generators/generators.module';
         configService.get('typeorm'),
     }),
     UsersModule,
-    ClientsModule,
     AuthModule,
-    ClientFormsModule,
-    GeneratorsModule,
+    GroupsModule
   ],
   controllers: [AppController],
   providers: [AppService],

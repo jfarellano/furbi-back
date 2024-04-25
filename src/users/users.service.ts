@@ -28,8 +28,8 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  findOneByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOneBy({ email });
+  findOneByPhone(phone: string): Promise<User | null> {
+    return this.usersRepository.findOneBy({ phone: phone });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto):  Promise<User | null> {  
@@ -42,16 +42,16 @@ export class UsersService {
     return await this.usersRepository.delete(id);
   }
 
-  async validatePassword(email: string, password: string) {
+  async validatePassword(phone: string, password: string) {
     const user = await this.usersRepository
       .createQueryBuilder('user')
-      .where('user.email = :email', { email })
+      .where({ phone })
       .addSelect('user.password')
       .getOne();
 
     const passwordMatchs = bcrypt.compareSync(password, user.password);
     if (passwordMatchs) {
-      return await this.findOneByEmail(email);
+      return await this.findOneByPhone(phone);
     }
     return null;
   }

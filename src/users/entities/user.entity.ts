@@ -12,8 +12,20 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ unique: true })
-  email: string;
+  @Column({default: ""})
+  nickname: string;
+
+  // @Column()
+  // positions: Array<string>;
+
+  // @Column({ unique: true })
+  // email: string;
+
+  // @Column()
+  // nationality: string;
+
+  @Column()
+  phone: string;
 
   @Column({ select: false })
   password: string;
