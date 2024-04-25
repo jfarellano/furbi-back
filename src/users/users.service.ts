@@ -78,4 +78,22 @@ export class UsersService {
     const salt = bcrypt.genSaltSync(10);
     return bcrypt.hashSync(value, salt);
   }
+
+  async getPositions() {
+    return {
+      GK:  "Goalkeeper",
+      CB:  "Center Back",
+      LB:  "Left Back",
+      RB:  "Right Back",
+      CD:  "Center Defensive Midfielder",
+      CM:  "Center Midfielder",
+      RM:  "Right Midfielder",
+      LM:  "Left Midfielder",
+      CA:  "Center Attacking Midfielder",
+      CF:  "Center Forward",
+      ST:  "Striker",
+      LW:  "Left Wing",
+      RW:  "Right Wing"
+    }
+  }
 }

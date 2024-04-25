@@ -35,6 +35,7 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    // only update nickname, positions
     return this.usersService.update(+id, updateUserDto);
   }
 
@@ -43,4 +44,10 @@ export class UsersController {
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
+
+  // @UseGuards(AuthGuard)
+  // @Get("positions")
+  // positions() {
+  //   return {}
+  // }
 }
