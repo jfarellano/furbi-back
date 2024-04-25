@@ -21,6 +21,12 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
+  @Get('positions')
+  prositions() {
+    return this.usersService.positions()
+  }
+
+  @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
