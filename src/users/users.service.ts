@@ -42,6 +42,24 @@ export class UsersService {
     return await this.usersRepository.delete(id);
   }
 
+  positions() {
+    return {
+      GK:  "Goalkeeper",
+      CB:  "Center Back",
+      LB:  "Left Back",
+      RB:  "Right Back",
+      CD:  "Center Defensive Midfielder",
+      CM:  "Center Midfielder",
+      RM:  "Right Midfielder",
+      LM:  "Left Midfielder",
+      CA:  "Center Attacking Midfielder",
+      CF:  "Center Forward",
+      ST:  "Striker",
+      LW:  "Left Wing",
+      RW:  "Right Wing"
+    }
+  }
+
   async validatePassword(phone: string, password: string) {
     const user = await this.usersRepository
       .createQueryBuilder('user')
