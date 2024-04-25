@@ -4,22 +4,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-export enum Position {
-  GK = "Goalkeeper",
-  CB = "Center Back",
-  LB = "Left Back",
-  RB = "Right Back",
-  CDM = "Center Defensive Midfielder",
-  CM = "Center Midfielder",
-  RM = "Right Midfielder",
-  LM = "Left Midfielder",
-  CAM = "Center Attacking Midfielder",
-  CF = "Center Forward",
-  ST = "Striker",
-  LW = "Left Wing",
-  RW = "Right Wing",
-}
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
