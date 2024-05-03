@@ -39,6 +39,6 @@ export class GroupsService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} group`;
+    return this.groupsRepository.delete(id);
   }
 }

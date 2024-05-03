@@ -18,25 +18,47 @@ export type MatchResult = {
     } 
 };
 
+export type MatchLocation = {
+    latitude: number,
+    longitude: number
+}
+
+export enum MatchStatus {
+    UPCOMING = "upcoming",
+    ONGOING = "ongoing",
+    FINISHED = "finished",
+    CANCELLED = "cancelled"
+}
+
 @Entity()
 export class Match {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({ type: "timestamp with time zone", nullable: true })
-    listStartDatetime: Date
+    listStartDatetime: Date;
 
     @Column({ type: "timestamp with time zone", nullable: true })
-    listConfirmDatetime: Date
+    listConfirmDatetime: Date;
 
     @Column({ type: "timestamp with time zone", nullable: false })
-    matchDatetime: Date
+    matchDatetime: Date;
 
     @Column({ nullable: true })
-    matchPlace: string
+    matchPlace: string;
 
-    @Column('json', {nullable: true})
+    @Column('json', {nullable: true, default: null})
     result: MatchResult;
+
+    @Column('json', {nullable: true, default: null})
+    matchLocation: MatchLocation
+
+    @Column({
+        type: "enum",
+        enum: MatchStatus,
+        default: MatchStatus.UPCOMING
+    })
+    status: MatchStatus
 
     @ManyToOne(() => Group, (group) => group.matches)
     @JoinTable()

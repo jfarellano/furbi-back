@@ -20,10 +20,10 @@ export class GroupsController {
     let group = await this.groupsService.findOne(groupId);
 
     if(!user){
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
     }
     if(!group){
-      throw new HttpException('Group not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Group not found', HttpStatus.BAD_REQUEST);
     }
     
     if(!group.players){
@@ -199,6 +199,15 @@ export class GroupsController {
   @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.groupsService.remove(+id);
+    let group = this.groupsService.findOne(+id);
+    if(!group){
+      this.groupsService.remove(+id);
+      return {
+        message: "Group deleted",
+        groupId: id
+      }
+    } else {
+      throw new HttpException('Group does not exist', HttpStatus.BAD_REQUEST);
+    }
   }
 }
