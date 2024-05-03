@@ -21,15 +21,20 @@ export class GroupsService {
   }
 
   findOne(id: number) {
-    return this.groupsRepository.findOneBy({id: id});
+    return this.groupsRepository.findOne(
+      {
+        where: { id: id },
+        relations: ['players']
+      }
+    )
+  }
+
+  async saveGroup(group: Group){
+    return await this.groupsRepository.save(group);
   }
 
   async update(id: number, updateGroupDto: UpdateGroupDto) {
-    let group = await this.findOne(id);
-    group.teams = updateGroupDto.teams;
-    
-    console.log(group);
-    await this.groupsRepository.update(id, group)
+    await this.groupsRepository.update(id, updateGroupDto)
     return this.findOne(id) 
   }
 

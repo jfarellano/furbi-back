@@ -2,10 +2,21 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    ManyToOne
+    ManyToOne,
+    JoinTable
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity'
 import { Group } from 'src/groups/entities/group.entity';
+
+export type MatchResult = { 
+    team_1: {
+        teamName: string,
+        goals: number
+    }, 
+    team_2: {
+        teamName: string,
+        goals: number
+    } 
+};
 
 @Entity()
 export class Match {
@@ -24,21 +35,16 @@ export class Match {
     @Column({ nullable: true })
     matchPlace: string
 
-    @Column('simple-json', {nullable: true})
-    result: { 
-        team_1: {
-            team_id: number,
-            goals: number
-        }, 
-        team_2: {
-            team_id: number,
-            goals: number
-        } 
-    };
+    @Column('json', {nullable: true})
+    result: MatchResult;
 
     @ManyToOne(() => Group, (group) => group.matches)
-    group: Group
+    @JoinTable()
+    group: Group;
 
-    @Column('simple-json', { array: true, nullable: false,  default: []})
+    @Column('json', { nullable: false,  default: []})
     playerOfTheMatchVoting: {userId: number, voters: {userId: number}[]}[];
+
+    @Column('json', { nullable: false,  default: []})
+    playerList: {userId: number, joinDatetime: Date, confirmDatetime: Date, confirmEmoji: string}[];
 }

@@ -9,7 +9,7 @@ import {
     JoinTable
 } from 'typeorm';
 
-interface Team {
+export type Team = {
     name: string;
     color: string;
 }
@@ -22,10 +22,10 @@ export class Group {
     @Column()
     name: string;
 
-    @Column('text', { array: true, nullable: false,  default: []})
+    @Column('json', { nullable: false,  default: [] })
     teams: Team[]
 
-    @ManyToMany(() => User)
+    @ManyToMany(() => User, (user) => user.groups, {cascade: false})
     @JoinTable()
     players: User[]
 

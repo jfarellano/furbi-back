@@ -25,11 +25,21 @@ export class UsersService {
   }
 
   findOne(id: number): Promise<User | null> {
-    return this.usersRepository.findOneBy({ id });
+    return this.usersRepository.findOne(
+      {
+        where: { id: id },
+        relations: ['groups']
+      }
+    );
   }
 
   findOneByPhone(phone: string): Promise<User | null> {
-    return this.usersRepository.findOneBy({ phone: phone });
+    return this.usersRepository.findOne(
+      {
+        where: { phone: phone },
+        relations: ['groups']
+      }
+    );
   }
 
   async update(id: number, updateUserDto: UpdateUserDto):  Promise<User | null> {  
@@ -40,6 +50,10 @@ export class UsersService {
 
   async remove(id: number): Promise<DeleteResult> {
     return await this.usersRepository.delete(id);
+  }
+
+  async saveUser(user: User){
+    return await this.usersRepository.save(user);
   }
 
   positions() {
@@ -72,6 +86,16 @@ export class UsersService {
       return await this.findOneByPhone(phone);
     }
     return null;
+  }
+
+  async validateSuperuser(userId: number) {
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .where({ id: userId })
+      .addSelect('user.superuser')
+      .getOne();
+
+    return user.superuser;
   }
 
   hash(value: string) {

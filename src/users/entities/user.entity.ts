@@ -1,7 +1,10 @@
+import { Group } from 'src/groups/entities/group.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -12,14 +15,17 @@ export class User {
   @Column()
   name: string;
 
+  @Column({default: false, select: false})
+  superuser: boolean;
+
   @Column({default: ""})
   nickname: string;
 
   @Column('text', { array: true, nullable: false,  default: []})
   positions: string[];
 
-  // @Column()
-  // nationality: string;
+  @ManyToMany(() => Group, (group) => group.players, {cascade: false})
+  groups: Group[]
 
   @Column()
   phone: string;
