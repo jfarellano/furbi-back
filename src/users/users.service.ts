@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -45,7 +45,9 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto):  Promise<User | null> {  
     if(updateUserDto.password) updateUserDto.password = this.hash(updateUserDto.password)  
     await this.usersRepository.update(id, updateUserDto)
-    return this.findOne(id) 
+    let newUserData = await this.findOne(id);
+    if(newUserData === null) throw new HttpException('User not found', HttpStatus.BAD_REQUEST);
+    return newUserData;
   }
 
   async remove(id: number): Promise<DeleteResult> {

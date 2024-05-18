@@ -7,6 +7,15 @@ import {
   JoinTable,
 } from 'typeorm';
 
+export type PlayerRating = {
+  PAC: number,
+  SHO: number,
+  DEF: number,
+  DRI: number,
+  PAS: number,
+  PHY: number
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -32,4 +41,14 @@ export class User {
 
   @Column({ select: false })
   password: string;
+
+  @Column('json', { nullable: false, default: {
+    PAC: 0,
+    SHO: 0,
+    DEF: 0,
+    DRI: 0,
+    PAS: 0,
+    PHY: 0
+  } })
+  rating: PlayerRating;
 }

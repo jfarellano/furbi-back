@@ -4,6 +4,7 @@ import { UpdateMatchDto } from './dto/update-match.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Match, MatchStatus } from './entities/match.entity';
 import { Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class MatchesService {
@@ -16,7 +17,7 @@ export class MatchesService {
     return this.matchesRepository.save(createMatchDto);
   }
 
-  async findAll(options: {groupId: number | null, status: string | null}) {
+  async findAll(options: {groupId?: number, status?: string}) {
     let whereClause = {}
     if(options.groupId) whereClause["group"] = options.groupId;    
     if(options.status && (Object.values(MatchStatus) as string[]).includes(options.status)) whereClause["status"] = options.status;
@@ -35,7 +36,7 @@ export class MatchesService {
   }
 
   update(id: number, updateMatchDto: UpdateMatchDto) {
-    return `This action updates a #${id} match`;
+    return this.matchesRepository.update(id, updateMatchDto);
   }
 
   async saveMatch(match: Match){
@@ -44,5 +45,12 @@ export class MatchesService {
 
   remove(id: number) {
     return `This action removes a #${id} match`;
+  }
+
+  validateMatchAdmin(user: User, match: Match){
+    let foundUser = match.admins.find((el) => {
+      return el.userId === user.id;
+    });
+    return foundUser != undefined;
   }
 }

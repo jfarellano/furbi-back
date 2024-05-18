@@ -4,12 +4,16 @@ import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { UsersService } from 'src/users/users.service';
+import { CreateTeamDto } from './dto/create-team.dto';
+import { DeleteTeamDto } from './dto/delete-team-dto';
+import { MatchesService } from 'src/matches/matches.service';
 
 @Controller('groups')
 export class GroupsController {
   constructor(
     private readonly groupsService: GroupsService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly matchesService: MatchesService
   ) {}
 
   @UseGuards(AuthGuard)
@@ -196,6 +200,50 @@ export class GroupsController {
     return this.groupsService.update(+id, updateGroupDto);
   }
 
+  // Add a team to a group
+  @UseGuards(AuthGuard)
+  @Patch(':id/add-team')
+  async createTeamInGroup(@Param('id') id: string, @Body() createTeamDto: CreateTeamDto) {
+    let newTeam = {
+      id: createTeamDto.id,
+      name: createTeamDto.name,
+      color: createTeamDto.color
+    }
+    let group = await this.groupsService.findOne(+id);
+    if(group.teams.findIndex((element) => {return element.id == newTeam.id}) != -1){
+      throw new HttpException('Team already exist.', HttpStatus.BAD_REQUEST);
+    }
+
+    group.teams.push(newTeam);
+    return this.groupsService.saveGroup(group);
+  }
+
+  // Remove a team from a group
+  @UseGuards(AuthGuard)
+  @Patch(':id/remove-team')
+  async removeTeamInGroup(@Param('id') id: string, @Body() deleteTeamDto: DeleteTeamDto) {
+    const teamId = deleteTeamDto.id;
+    let group = await this.groupsService.findOne(+id);
+    let teamIndex = group.teams.findIndex((element) => {return element.id == teamId});
+    if(teamIndex == -1){
+      throw new HttpException('Team does not exist.', HttpStatus.BAD_REQUEST);
+    }
+    
+    // Check if the team has not been selected for matches
+    const matches = await this.matchesService.findAll({groupId: group.id});
+    console.log(group.matches);
+    
+    if(matches.find((element) => { 
+      return element.teams.team1ID == teamId || element.teams.team2ID == teamId
+    }) != undefined){
+      throw new HttpException('Team cannot be deleted as it has at least one match.', HttpStatus.BAD_REQUEST);
+    }
+
+    group.teams.splice(teamIndex, 1);
+ 
+    return this.groupsService.saveGroup(group);
+  }
+
   @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
@@ -210,4 +258,5 @@ export class GroupsController {
       throw new HttpException('Group does not exist', HttpStatus.BAD_REQUEST);
     }
   }
+  
 }

@@ -9,11 +9,11 @@ import { Group } from 'src/groups/entities/group.entity';
 
 export type MatchResult = { 
     team_1: {
-        teamName: string,
+        teamId: string,
         goals: number
     }, 
     team_2: {
-        teamName: string,
+        teamId: string,
         goals: number
     } 
 };
@@ -24,16 +24,21 @@ export type MatchLocation = {
 }
 
 export enum MatchStatus {
-    UPCOMING = "upcoming",
-    ONGOING = "ongoing",
-    FINISHED = "finished",
-    CANCELLED = "cancelled"
+    UPCOMING = "upcoming", // default
+    REGISTER = "register", // allow registrations between listStartDatetime and listConfirmDatetime
+    CONFIRMED = "confirmed", // between listConfirmDatetime and matchDatetime
+    ONGOING = "ongoing", // after matchDatetime
+    FINISHED = "finished", // when result is provided
+    CANCELLED = "cancelled" // when cancelled
 }
 
 @Entity()
 export class Match {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column({default: 11})
+    teamSize: number;
 
     @Column({ type: "timestamp with time zone", nullable: true })
     listStartDatetime: Date;
@@ -68,5 +73,23 @@ export class Match {
     playerOfTheMatchVoting: {userId: number, voters: {userId: number}[]}[];
 
     @Column('json', { nullable: false,  default: []})
-    playerList: {userId: number, joinDatetime: Date, confirmDatetime: Date, confirmEmoji: string}[];
+    teams: {
+        team1ID: string,
+        team2ID: string,
+    };
+
+    // Users that can modify details of the match. The user that creates the match is an admin
+    @Column('json', { nullable: false,  default: []})
+    admins: {
+        userId: number
+    }[];
+
+    @Column('json', { nullable: false,  default: []})
+    playerList: {
+        userId: number, 
+        joinDatetime: Date, 
+        confirmDatetime: Date, 
+        confirmEmoji: string,
+        teamName: string
+    }[];
 }
