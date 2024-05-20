@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 
@@ -23,10 +23,15 @@ export class AuthService {
   }
 
   async register(phone: string, pass: string, name: string): Promise<any> {
-    //const user = await this.usersService.validatePassword(phone, pass)
+    // Check that phone is not already in use
+    let newUserPhone = phone.replace(" ", ""); // remove spaces before saving to DB
+    const exists = await this.usersService.findOneByPhone(newUserPhone);
+    if(exists != null){
+      throw new HttpException('User not created.', HttpStatus.BAD_REQUEST);
+    }
 
     const user = this.usersService.create({
-      phone: phone,
+      phone: newUserPhone,
       password: pass,
       name: name
     });

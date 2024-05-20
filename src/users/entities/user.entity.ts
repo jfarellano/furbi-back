@@ -36,7 +36,7 @@ export class User {
   @ManyToMany(() => Group, (group) => group.players, {cascade: false})
   groups: Group[]
 
-  @Column()
+  @Column({ unique: true })
   phone: string;
 
   @Column({ select: false })

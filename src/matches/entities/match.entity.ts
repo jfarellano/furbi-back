@@ -88,8 +88,8 @@ export class Match {
     playerList: {
         userId: number, 
         joinDatetime: Date, 
-        confirmDatetime: Date, 
-        confirmEmoji: string,
-        teamName: string
+        confirmDatetime: Date | null, 
+        confirmEmoji: string | null,
+        teamId: string | null
     }[];
 }

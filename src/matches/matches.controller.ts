@@ -71,7 +71,7 @@ export class MatchesController {
         joinDatetime: new Date(),
         confirmDatetime: null,
         confirmEmoji: null,
-        teamName: null
+        teamId: null
       })
     } else {
       throw new HttpException('Already on the list.', HttpStatus.BAD_REQUEST);
@@ -122,7 +122,8 @@ export class MatchesController {
     match.playerList[matchPlayerEntry]['confirmEmoji'] = body.confirmEmoji;
 
     // Confirm the match if there are more than 2xTeamSize players confirmed.
-    const confirmedPlayers = match.playerList.filter((el) => {el.confirmDatetime != null}).length
+    const confirmedPlayers = match.playerList.filter((el) => {return el.confirmDatetime != null}).length
+    
     if(confirmedPlayers >= 2*match.teamSize){
       match.status = MatchStatus.CONFIRMED;
     }
@@ -166,7 +167,7 @@ export class MatchesController {
     match.playerList.splice(matchPlayerEntry, 1);
     
     // Back to a upcoming status if a player exits and the confirmed players are less than 2xTeamSize 
-    const confirmedPlayers = match.playerList.filter((el) => {el.confirmDatetime != null}).length;
+    const confirmedPlayers = match.playerList.filter((el) => {return el.confirmDatetime != null}).length;
     if(match.status == MatchStatus.CONFIRMED && confirmedPlayers < 2*match.teamSize){
       match.status = MatchStatus.UPCOMING;
     }
@@ -279,6 +280,44 @@ export class MatchesController {
   }
 
   /**
+   * Start a match. Must be a match admin. Sets the score as 0-0 and changes status to ongoing.
+   * Endpoint: /matches/:match-id/start
+   * Method: PATCH
+   */
+  @UseGuards(AuthGuard)
+  @Patch(':id/start')
+  async startMatch(@Param('id') id: string, @Body() startBody: any, @Req() request) {
+    let match = await this.matchesService.findOne(+id);
+    const selfUserId: number = request.user.sub;
+    const user = await this.usersService.findOne(selfUserId);
+    const override = startBody.override != undefined ? startBody.override : false;
+
+    if(!this.matchesService.validateMatchAdmin(user, match))  
+      throw new HttpException('User is not a match admin.', HttpStatus.BAD_REQUEST);
+
+    const confirmedPlayers = match.playerList.filter(el => {
+      return el.confirmDatetime != null;
+    })
+    if(confirmedPlayers.length < match.teamSize * 2 && !override )
+      // If override is sent as true, start the match independent of player number.
+      throw new HttpException('Not enough players.', HttpStatus.BAD_REQUEST);
+
+    // update the match player list element by element
+    match.result = {
+      team_1: {
+        teamId: match.teams.team1ID,
+        goals: 0
+      }, 
+      team_2: {
+        teamId: match.teams.team2ID,
+        goals: 0
+      } 
+    };
+    match.status = MatchStatus.ONGOING;
+    return this.matchesService.saveMatch(match);
+  }
+
+  /**
    * Finish a match. Receives the match result and builds the player-of-the-match list.
    * Endpoint: /matches/:match-id/finish
    * Method: PATCH
@@ -336,7 +375,7 @@ export class MatchesController {
     let updatePlayerList = []
     for (let player of newPlayerList){
       let updatePlayer = match.playerList.find(el => el.userId === player.userId);
-      updatePlayer.teamName = player.teamName;
+      updatePlayer.teamId = player.teamId;
       updatePlayerList.push(updatePlayer);
     }
     match.playerList = updatePlayerList;

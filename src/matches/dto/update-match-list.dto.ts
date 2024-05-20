@@ -4,6 +4,6 @@ export class UpdateMatchListDto {
   @IsNotEmpty()
   playerList: {
     "userId": number,
-    "teamName": string
+    "teamId": string
   }[]
 }
